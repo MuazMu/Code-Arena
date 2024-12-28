@@ -1,4 +1,5 @@
 Code Arena 🏆
+
 Solve problems, compete, and join exciting competitions!
 
 Code Arena is a platform designed for developers and problem-solvers to showcase their skills through challenges and competitions. With a focus on performance, flexibility, and inclusivity, Code Arena empowers users to learn, grow, and compete with peers from around the world.
