@@ -3,7 +3,7 @@
 ### System Requirements
 - Node.js 18.x or later
 - Docker and Docker Compose
-- MongoDB 6.0 or later
+- PostegreSql
 - Git
 
 ### Installation Steps
@@ -26,7 +26,7 @@ cp .env.example .env
 
 4. Configure environment variables in `.env`:
 ```
-DATABASE_URL="mongodb://localhost:27017/code-arena"
+DATABASE_URL="postgresql://postgres:password@localhost:5432/code-arena"
 NEXTAUTH_SECRET="your-secret-key"
 GITHUB_ID="your-github-oauth-id"
 GITHUB_SECRET="your-github-oauth-secret"
