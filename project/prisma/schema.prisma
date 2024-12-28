@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String        @id @default(cuid())
+  email         String        @unique
+  username      String        @unique
+  name          String
+  password      String
+  points        Int          @default(0)
+  rank          Int          @default(0)
+  submissions   Submission[]
+  challenges    Challenge[]   @relation("CreatedChallenges")
+  createdCompetitions Competition[] @relation("CreatedCompetitions")
+  participatingCompetitions CompetitionParticipant[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Challenge {
+  id            String       @id @default(cuid())
+  title         String
+  description   String
+  difficulty    String
+  points        Int
+  category      String
+  testCases     TestCase[]
+  sampleInput   String
+  sampleOutput  String
+  timeLimit     Int
+  memoryLimit   Int
+  createdBy     User        @relation("CreatedChallenges", fields: [createdById], references: [id])
+  createdById   String
+  submissions   Submission[]
+  competitions  CompetitionChallenge[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model TestCase {
+  id            String     @id @default(cuid())
+  input         String
+  expectedOutput String
+  isHidden      Boolean    @default(false)
+  challenge     Challenge  @relation(fields: [challengeId], references: [id])
+  challengeId   String
+}
+
+model Submission {
+  id              String    @id @default(cuid())
+  user            User      @relation(fields: [userId], references: [id])
+  userId          String
+  challenge       Challenge @relation(fields: [challengeId], references: [id])
+  challengeId     String
+  competition     Competition? @relation(fields: [competitionId], references: [id])
+  competitionId   String?
+  code            String
+  language        String
+  status          String
+  runtime         Float?
+  memory          Float?
+  score           Int
+  testCaseResults Json
+  submittedAt     DateTime  @default(now())
+}
+
+model Competition {
+  id              String    @id @default(cuid())
+  title           String
+  description     String
+  startTime       DateTime
+  endTime         DateTime
+  challenges      CompetitionChallenge[]
+  participants    CompetitionParticipant[]
+  createdBy       User      @relation("CreatedCompetitions", fields: [createdById], references: [id])
+  createdById     String
+  status          String
+  maxParticipants Int?
+  prizes          Json?
+  submissions     Submission[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// Junction table for Competition-Challenge many-to-many relation
+model CompetitionChallenge {
+  competition   Competition @relation(fields: [competitionId], references: [id])
+  competitionId String
+  challenge     Challenge   @relation(fields: [challengeId], references: [id])
+  challengeId   String
+  order         Int        @default(0)
+
+  @@id([competitionId, challengeId])
+}
+
+// Junction table for Competition-User (participants) many-to-many relation
+model CompetitionParticipant {
+  competition   Competition @relation(fields: [competitionId], references: [id])
+  competitionId String
+  user          User       @relation(fields: [userId], references: [id])
+  userId        String
+  joinedAt      DateTime   @default(now())
+
+  @@id([competitionId, userId])
+}

@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: code-arena
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  code-runner:
+    build: 
+      context: ./docker/code-runner
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./tmp/code:/code
+    security_opt:
+      - no-new-privileges
+    cpu_quota: 50000
+    mem_limit: 512m
+    pids_limit: 50
+
+volumes:
+  postgres_data:
