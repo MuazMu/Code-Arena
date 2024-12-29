@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Competition } from '@/lib/types/competition';
 import { useToast } from '@/hooks/use-toast';
+import { CompetitionFormData } from '@/types/competition';
 
 interface CompetitionDialogProps {
   open: boolean;
@@ -15,21 +16,39 @@ interface CompetitionDialogProps {
   onClose: () => void;
 }
 
+const defaultFormData: CompetitionFormData = {
+  title: '',
+  description: '',
+  startTime: '',
+  endTime: '',
+  maxParticipants: 0,
+  prizes: {
+    first: '',
+    second: '',
+    third: '',
+  },
+};
+
 export function CompetitionDialog({ open, competition, onClose }: CompetitionDialogProps) {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  const [formData, setFormData] = useState(competition || {
-    title: '',
-    description: '',
-    startTime: '',
-    endTime: '',
-    maxParticipants: 0,
-    prizes: {
-      first: '',
-      second: '',
-      third: '',
-    },
+  const [formData, setFormData] = useState<CompetitionFormData>(() => {
+    if (!competition) return defaultFormData;
+    
+    return {
+      title: competition.title,
+      description: competition.description,
+      startTime: new Date(competition.startTime).toISOString().slice(0, 16),
+      endTime: new Date(competition.endTime).toISOString().slice(0, 16),
+      maxParticipants: competition.maxParticipants || 0,
+      prizes: {
+        first: competition.prizes?.first || '',
+        second: competition.prizes?.second || '',
+        third: competition.prizes?.third || '',
+      },
+    };
   });
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

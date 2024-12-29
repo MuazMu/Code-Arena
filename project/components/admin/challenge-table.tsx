@@ -15,12 +15,20 @@ import { Challenge } from '@/lib/types/challenge';
 import { Edit, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+
+interface ChallengeWithCount extends Challenge {
+  _count?: {
+    submissions: number;
+  };
+}
+
+
 interface ChallengeTableProps {
   onEdit: (challenge: Challenge) => void;
 }
 
 export function ChallengeTable({ onEdit }: ChallengeTableProps) {
-  const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [challenges, setChallenges] = useState<ChallengeWithCount[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
