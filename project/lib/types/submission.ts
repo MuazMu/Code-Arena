@@ -18,4 +18,7 @@ export interface Submission {
     error?: string;
   }[];
   submittedAt: Date;
+  challenge?: {
+    title: string;
+  };
 }

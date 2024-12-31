@@ -5,6 +5,7 @@ export interface TestCase {
   input: string;
   expectedOutput: string;
   isHidden: boolean;
+  passed?: boolean;
 }
 
 export interface Challenge {
@@ -17,9 +18,11 @@ export interface Challenge {
   testCases: TestCase[];
   sampleInput: string;
   sampleOutput: string;
-  timeLimit: number; // in milliseconds
-  memoryLimit: number; // in MB
+  timeLimit: number;
+  memoryLimit: number;
   createdBy: string;
   createdAt: Date;
   updatedAt: Date;
+  solved?: boolean;
+  locked?: boolean;
 }

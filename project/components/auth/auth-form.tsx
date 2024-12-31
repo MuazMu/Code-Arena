@@ -28,16 +28,20 @@ const signupSchema = loginSchema.extend({
   name: z.string().min(2, 'Name must be at least 2 characters'),
 });
 
+type LoginFormData = z.infer<typeof loginSchema>;
+type SignupFormData = z.infer<typeof signupSchema>;
+
 interface AuthFormProps {
   type: 'login' | 'signup';
-  onSubmit: (data: any) => Promise<void>;
+  onSubmit: (data: LoginFormData | SignupFormData) => Promise<void>;
   loading: boolean;
 }
 
 export function AuthForm({ type, onSubmit, loading }: AuthFormProps) {
-  const schema = type === 'login' ? loginSchema : signupSchema;
-  const form = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
+  const [error, setError] = useState<string | null>(null);
+
+  const form = useForm<LoginFormData | SignupFormData>({
+    resolver: zodResolver(type === 'login' ? loginSchema : signupSchema),
     defaultValues: {
       email: '',
       password: '',
@@ -47,6 +51,15 @@ export function AuthForm({ type, onSubmit, loading }: AuthFormProps) {
       }),
     },
   });
+
+  const handleSubmit = async (data: LoginFormData | SignupFormData) => {
+    try {
+      setError(null);
+      await onSubmit(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    }
+  };
 
   return (
     <Card className="w-full max-w-md p-8">
@@ -61,8 +74,14 @@ export function AuthForm({ type, onSubmit, loading }: AuthFormProps) {
         </p>
       </div>
 
+      {error && (
+        <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-md mb-6">
+          {error}
+        </div>
+      )}
+
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           {type === 'signup' && (
             <>
               <FormField
@@ -127,22 +146,6 @@ export function AuthForm({ type, onSubmit, loading }: AuthFormProps) {
           </Button>
         </form>
       </Form>
-
-      <div className="relative my-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t"></div>
-        </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
-          </span>
-        </div>
-      </div>
-
-      <Button variant="outline" className="w-full" type="button">
-        <Github className="w-4 h-4 mr-2" />
-        GitHub
-      </Button>
 
       <div className="mt-6 text-center text-sm">
         {type === 'login' ? (

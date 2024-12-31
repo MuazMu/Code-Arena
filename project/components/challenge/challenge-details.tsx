@@ -3,7 +3,7 @@
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Challenge } from '@/lib/types/challenge';
-import { Clock, Memory } from 'lucide-react';
+import { Clock, HardDrive } from 'lucide-react';
 
 interface ChallengeDetailsProps {
   challenge: Challenge;
@@ -28,7 +28,7 @@ export function ChallengeDetails({ challenge }: ChallengeDetailsProps) {
           {challenge.timeLimit}ms
         </div>
         <div className="flex items-center gap-1">
-          <Memory className="w-4 h-4" />
+        <HardDrive className="w-4 h-4" />
           {challenge.memoryLimit}MB
         </div>
       </div>

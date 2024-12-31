@@ -4,8 +4,9 @@ export interface Competition {
   description: string;
   startTime: Date;
   endTime: Date;
-  challenges: string[]; // Challenge IDs
-  participants: string[]; // User IDs
+  duration: number; // in hours
+  challenges: string[];
+  participants: string[];
   createdBy: string;
   status: 'upcoming' | 'active' | 'ended';
   maxParticipants?: number;
