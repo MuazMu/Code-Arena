@@ -9,6 +9,7 @@ export interface TestCase {
 }
 
 export interface Challenge {
+  starterCode: string;
   id: string;
   title: string;
   description: string;
