@@ -2,41 +2,41 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase/config';
 import { CompetitionHeader } from '@/components/compete/competition-header';
 import { CompetitionChallenges } from '@/components/compete/competition-challenges';
 import { CompetitionLeaderboard } from '@/components/compete/competition-leaderboard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Competition } from '@/lib/types/competition';
-import { useToast } from '@/hooks/use-toast';
 
 export default function CompetitionPage() {
   const { id } = useParams();
-  const [competition, setCompetition] = useState<Competition | null>(null);
-  const { toast } = useToast();
+  const [competition, setCompetition] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchCompetition() {
       try {
-        const response = await fetch(`/api/competitions/${id}`);
-        const data = await response.json();
-        setCompetition(data);
+        const docRef = doc(db, 'competitions', id as string);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          setCompetition({ id: docSnap.id, ...docSnap.data() });
+        }
       } catch (error) {
-        toast({
-          title: 'Error',
-          description: 'Failed to fetch competition details',
-          variant: 'destructive',
-        });
+        console.error('Failed to fetch competition:', error);
+      } finally {
+        setLoading(false);
       }
     }
 
     if (id) {
       fetchCompetition();
     }
-  }, [id, toast]);
+  }, [id]);
 
-  if (!competition) {
-    return <div>Loading...</div>;
-  }
+  if (loading) return <div>Loading...</div>;
+  if (!competition) return <div>Competition not found</div>;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -58,7 +58,7 @@ export default function CompetitionPage() {
         </TabsContent>
 
         <TabsContent value="submissions">
-          <CompetitionSubmissions competitionId={competition.id} />
+          {/* Add CompetitionSubmissions component */}
         </TabsContent>
       </Tabs>
     </div>

@@ -8,13 +8,16 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 
 interface ChallengeListProps {
+  challenges: Challenge[];
+  loading: boolean;
   category: string;
   difficulty: DifficultyLevel | 'all';
   status?: 'solved' | 'attempted' | 'bookmarked';
 }
 
+
 export function ChallengeList({ category, difficulty, status }: ChallengeListProps) {
-  const [challenges, setChallenges] = useState<Challenge[]>([]);
+   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
